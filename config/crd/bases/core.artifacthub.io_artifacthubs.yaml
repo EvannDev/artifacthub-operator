@@ -46,6 +46,10 @@ spec:
               allowUserSignUp:
                 description: AllowUserSignUp indicates whether user sign-up is allowed.
                 type: boolean
+              version:
+                description: Version is the version of Artifact Hub to deploy.
+                pattern: ^v\d+\.\d+\.\d+(-\w+)?$
+                type: string
             type: object
           status:
             description: ArtifactHubStatus defines the observed state of ArtifactHub.

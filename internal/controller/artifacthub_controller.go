@@ -18,6 +18,11 @@ package controller
 
 import (
 	"context"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/pointer"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -36,6 +41,7 @@ type ArtifactHubReconciler struct {
 // +kubebuilder:rbac:groups=core.artifacthub.io,resources=artifacthubs,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core.artifacthub.io,resources=artifacthubs/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=core.artifacthub.io,resources=artifacthubs/finalizers,verbs=update
+// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=create;get;update;patch;watch;delete;list
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -47,7 +53,7 @@ type ArtifactHubReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.20.4/pkg/reconcile
 func (r *ArtifactHubReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = logf.FromContext(ctx)
+	logger := logf.FromContext(ctx)
 
 	var artifacthub corev1alpha1.ArtifactHub
 	if err := r.Get(ctx, req.NamespacedName, &artifacthub); err != nil {
@@ -57,13 +63,20 @@ func (r *ArtifactHubReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	deploy := &appsv1.Deployment{
+	var version = artifacthub.Spec.Version
+	switch {
+	case version == "":
+		version = "latest"
+	}
+	image := "artifacthub/hub:" + version
+
+	var deploy = &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      artifacthub.Name + "-deployment",
 			Namespace: artifacthub.Namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: int32Ptr(1),
+			Replicas: pointer.Int32(1),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{"app": artifacthub.Name},
 			},
@@ -74,13 +87,12 @@ func (r *ArtifactHubReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{
 						Name:  "artifacthub",
-						Image: "artifacthub/hub:" + artifacthub.Version,
+						Image: image,
 					}},
 				},
 			},
 		},
 	}
-
 	var found appsv1.Deployment
 	err := r.Get(ctx, client.ObjectKey{Name: deploy.Name, Namespace: deploy.Namespace}, &found)
 	if err != nil && errors.IsNotFound(err) {
@@ -93,8 +105,7 @@ func (r *ArtifactHubReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	// ✅ Mettre à jour le status
-	artifacthub.Status.Ready = true // tu peux mettre plus d'info
+	artifacthub.Status.Ready = true
 	if err := r.Status().Update(ctx, &artifacthub); err != nil {
 		logger.Error(err, "unable to update ArtifactHub status")
 		return ctrl.Result{}, err
