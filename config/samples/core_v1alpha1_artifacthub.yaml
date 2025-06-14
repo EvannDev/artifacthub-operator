@@ -1,0 +1,10 @@
+apiVersion: core.artifacthub.io/v1alpha1
+kind: ArtifactHub
+metadata:
+  labels:
+    app.kubernetes.io/name: artifacthub-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: artifacthub-sample
+spec:
+  allowPrivateRepositories: true
+  allowUserSignUp: true
