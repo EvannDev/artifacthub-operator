@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -43,11 +44,14 @@ type ArtifactHubSpec struct {
 type ArtifactHubStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	Ready bool `json:"ready,omitempty"`
+	Ready   corev1.ConditionStatus `json:"ready,omitempty"`
+	Message string                 `json:"message,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Ready",type=string,JSONPath=".status.ready",description="Ready State"
+// +kubebuilder:printcolumn:name="Message",type=string,JSONPath=".status.message",description="Message"
 
 // ArtifactHub is the Schema for the artifacthubs API.
 type ArtifactHub struct {

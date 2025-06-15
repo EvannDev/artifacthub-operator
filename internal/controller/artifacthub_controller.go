@@ -18,12 +18,11 @@ package controller
 
 import (
 	"context"
+	"google.golang.org/protobuf/proto"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/pointer"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -76,7 +75,7 @@ func (r *ArtifactHubReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 			Namespace: artifacthub.Namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: pointer.Int32(1),
+			Replicas: proto.Int32(1),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{"app": artifacthub.Name},
 			},
@@ -96,7 +95,6 @@ func (r *ArtifactHubReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	var found appsv1.Deployment
 	err := r.Get(ctx, client.ObjectKey{Name: deploy.Name, Namespace: deploy.Namespace}, &found)
 	if err != nil && errors.IsNotFound(err) {
-		// Si absent, le créer
 		logger.Info("Creating Deployment", "Namespace", deploy.Namespace, "Name", deploy.Name)
 		if err := r.Create(ctx, deploy); err != nil {
 			return ctrl.Result{}, err
@@ -105,7 +103,8 @@ func (r *ArtifactHubReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	artifacthub.Status.Ready = true
+	artifacthub.Status.Ready = found.Status.Conditions[1].Status
+	artifacthub.Status.Message = found.Status.Conditions[1].Message
 	if err := r.Status().Update(ctx, &artifacthub); err != nil {
 		logger.Error(err, "unable to update ArtifactHub status")
 		return ctrl.Result{}, err
