@@ -1,4 +1,4 @@
-# 📦 ArtifactHub Operator
+# ArtifactHub Operator for Kubernetes !
 
 **Repo :** [EvannDev/artifacthub-operator](https://github.com/EvannDev/artifacthub-operator)  
 **Description :** Un Kubernetes Operator pour déployer et gérer [Artifact Hub](https://artifacthub.io/) de la CNCF directement depuis votre cluster.  
