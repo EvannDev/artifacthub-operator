@@ -1,11 +1,367 @@
 apiVersion: core.artifacthub.io/v1alpha1
-kind: ArtifactHub
+kind: Artifacthub
 metadata:
-  labels:
-    app.kubernetes.io/name: artifacthub-operator
-    app.kubernetes.io/managed-by: kustomize
   name: artifacthub-sample
 spec:
-  version: "v1.21.0"
-  allowPrivateRepositories: true
-  allowUserSignUp: true
+  # Default values copied from <project_dir>/helm-charts/artifact-hub/values.yaml
+  creds:
+    dockerPassword: ""
+    dockerUsername: ""
+  db:
+    database: hub
+    host: ""
+    password: postgres
+    port: "5432"
+    sslmode: prefer
+    user: postgres
+  dbMigrator:
+    configDir: /home/db-migrator/.cfg
+    job:
+      automountServiceAccountToken: true
+      containerSecurityContext: {}
+      extraJobLabels: {}
+      extraPodLabels: {}
+      image:
+        repository: artifacthub/db-migrator
+      nodeSelector: {}
+      resources: {}
+      securityContext: {}
+      serviceAccountName: default
+      ttlSecondsAfterFinished: null
+    loadSampleData: true
+  dynamicResourceNamePrefixEnabled: false
+  email:
+    from: ""
+    fromName: ""
+    replyTo: ""
+    smtp:
+      auth: plain
+      host: ""
+      password: ""
+      port: 587
+      username: ""
+  events:
+    scanningErrors: false
+    trackingErrors: false
+  extraDeploy: []
+  fullnameOverride: ""
+  hub:
+    analytics:
+      gaTrackingID: ""
+    deploy:
+      containerSecurityContext: {}
+      extraContainers: []
+      extraDeploymentLabels: {}
+      extraPodLabels: {}
+      extraVolumeMounts: []
+      extraVolumes: []
+      image:
+        repository: artifacthub/hub
+      initContainers:
+        checkDbIsReady:
+          resources: {}
+          securityContext: {}
+        checkDbMigrator:
+          image:
+            repository: bitnami/kubectl
+          resources: {}
+          securityContext: {}
+      nodeSelector: {}
+      readinessGates: []
+      replicaCount: 1
+      resources: {}
+      securityContext: {}
+    ingress:
+      annotations: {}
+      defaultBackendEnabled: true
+      enabled: true
+      extraLabels: {}
+      ingressClassName: ""
+      rules: []
+      tls: []
+    rbac:
+      create: true
+    server:
+      allowPrivateRepositories: false
+      allowUserSignUp: true
+      bannersURL: ""
+      baseURL: ""
+      basicAuth:
+        enabled: false
+        password: changeme
+        username: hub
+      cacheDir: ""
+      configDir: /home/hub/.cfg
+      cookie:
+        hashKey: default-unsafe-key
+        secure: false
+      csrf:
+        authKey: default-unsafe-key
+        secure: false
+      motd: ""
+      motdSeverity: info
+      oauth:
+        github:
+          clientID: ""
+          clientSecret: ""
+          enabled: false
+          redirectURL: ""
+          scopes:
+          - read:user
+          - user:email
+        google:
+          clientID: ""
+          clientSecret: ""
+          enabled: false
+          redirectURL: ""
+          scopes:
+          - https://www.googleapis.com/auth/userinfo.email
+          - https://www.googleapis.com/auth/userinfo.profile
+        oidc:
+          clientID: ""
+          clientSecret: ""
+          enabled: false
+          issuerURL: ""
+          redirectURL: ""
+          scopes:
+          - openid
+          - profile
+          - email
+          skipEmailVerifiedCheck: false
+      shutdownTimeout: 10s
+      xffIndex: 0
+    service:
+      port: 80
+      type: NodePort
+    serviceAccount:
+      automountServiceAccountToken: true
+      create: true
+      name: ""
+    theme:
+      colors:
+        primary: '#417598'
+        secondary: '#2D4857'
+      images:
+        appleTouchIcon192: /static/media/logo192_v2.png
+        appleTouchIcon512: /static/media/logo512_v2.png
+        openGraphImage: /static/media/artifactHub_v2.png
+        shortcutIcon: /static/media/logo_v2.png
+        websiteLogo: /static/media/logo/artifacthub-brand-white.svg
+      sampleQueries: []
+      siteName: Artifact hub
+  imagePullSecrets: []
+  imageTag: ""
+  images:
+    store: pg
+  log:
+    level: info
+    pretty: false
+  nameOverride: ""
+  nodeSelector: {}
+  postgresql:
+    enabled: true
+    extraEnv: []
+    global:
+      postgresql: {}
+    image:
+      debug: false
+      pullPolicy: IfNotPresent
+      registry: docker.io
+      repository: artifacthub/postgres
+      tag: latest
+    ldap:
+      baseDN: ""
+      bind_password: null
+      bindDN: ""
+      enabled: false
+      port: ""
+      prefix: ""
+      scheme: ""
+      search_attr: ""
+      search_filter: ""
+      server: ""
+      suffix: ""
+      tls: false
+      url: ""
+    livenessProbe:
+      enabled: true
+      failureThreshold: 6
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    master:
+      affinity: {}
+      annotations: {}
+      extraInitContainers: ""
+      extraVolumeMounts: []
+      extraVolumes: []
+      labels: {}
+      nodeSelector: {}
+      podAnnotations: {}
+      podLabels: {}
+      priorityClassName: ""
+      tolerations: []
+    metrics:
+      enabled: false
+      image:
+        pullPolicy: IfNotPresent
+        registry: docker.io
+        repository: bitnami/postgres-exporter
+        tag: 0.8.0-debian-10-r4
+      livenessProbe:
+        enabled: true
+        failureThreshold: 6
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      prometheusRule:
+        additionalLabels: {}
+        enabled: false
+        namespace: ""
+        rules: []
+      readinessProbe:
+        enabled: true
+        failureThreshold: 6
+        initialDelaySeconds: 5
+        periodSeconds: 10
+        successThreshold: 1
+        timeoutSeconds: 5
+      securityContext:
+        enabled: false
+        runAsUser: 1001
+      service:
+        annotations:
+          prometheus.io/port: "9187"
+          prometheus.io/scrape: "true"
+        loadBalancerIP: null
+        type: ClusterIP
+      serviceMonitor:
+        additionalLabels: {}
+        enabled: false
+    networkPolicy:
+      allowExternal: true
+      enabled: false
+    persistence:
+      accessModes:
+      - ReadWriteOnce
+      annotations: {}
+      enabled: true
+      mountPath: /data
+      size: 8Gi
+      subPath: ""
+    postgresqlDataDir: /data/pgdata
+    postgresqlDatabase: hub
+    postgresqlPassword: postgres
+    postgresqlUsername: postgres
+    readinessProbe:
+      enabled: true
+      failureThreshold: 6
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    replication:
+      applicationName: my_application
+      enabled: false
+      numSynchronousReplicas: 0
+      password: repl_password
+      slaveReplicas: 1
+      synchronousCommit: "off"
+      user: repl_user
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    securityContext:
+      enabled: true
+      fsGroup: 1001
+      runAsUser: 1001
+    service:
+      annotations: {}
+      port: 5432
+      type: ClusterIP
+    serviceAccount:
+      enabled: false
+    shmVolume:
+      enabled: true
+    slave:
+      affinity: {}
+      annotations: {}
+      extraInitContainers: ""
+      extraVolumeMounts: []
+      extraVolumes: []
+      labels: {}
+      nodeSelector: {}
+      podAnnotations: {}
+      podLabels: {}
+      priorityClassName: ""
+      tolerations: []
+    updateStrategy:
+      type: RollingUpdate
+    volumePermissions:
+      enabled: true
+      image:
+        pullPolicy: Always
+        registry: docker.io
+        repository: bitnami/minideb
+        tag: stretch
+      securityContext:
+        runAsUser: 0
+  pullPolicy: IfNotPresent
+  restrictedHTTPClient: false
+  scanner:
+    cacheDir: ""
+    concurrency: 3
+    configDir: /home/scanner/.cfg
+    cronjob:
+      containerSecurityContext: {}
+      extraCronJobLabels: {}
+      extraJobLabels: {}
+      extraVolumeMounts: []
+      extraVolumes: []
+      image:
+        repository: artifacthub/scanner
+      nodeSelector: {}
+      resources: {}
+      securityContext: {}
+      serviceAccountName: default
+    enabled: true
+    trivyURL: ""
+  tracker:
+    bypassDigestCheck: false
+    cacheDir: ""
+    concurrency: 10
+    configDir: /home/tracker/.cfg
+    cronjob:
+      containerSecurityContext: {}
+      extraCronJobLabels: {}
+      extraJobLabels: {}
+      extraVolumeMounts: []
+      extraVolumes: []
+      image:
+        repository: artifacthub/tracker
+      nodeSelector: {}
+      resources: {}
+      securityContext: {}
+      serviceAccountName: default
+    repositoriesKinds: []
+    repositoriesNames: []
+    repositoryTimeout: 15m
+  trivy:
+    deploy:
+      extraDeploymentLabels: {}
+      extraPodLabels: {}
+      extraVolumeMounts: []
+      extraVolumes: []
+      image: aquasec/trivy:0.56.1
+      nodeSelector: {}
+      resources: {}
+      securityContext: {}
+    enabled: true
+    persistence:
+      enabled: false
+      size: 10Gi
+  
+  

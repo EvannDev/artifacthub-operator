@@ -58,13 +58,11 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-      - command:
-        - /manager
-        args:
+      - args:
           - --leader-elect
+          - --leader-election-id=artifacthub-operator
           - --health-probe-bind-address=:8081
         image: controller:latest
-        imagePullPolicy: Always
         name: manager
         ports: []
         securityContext:

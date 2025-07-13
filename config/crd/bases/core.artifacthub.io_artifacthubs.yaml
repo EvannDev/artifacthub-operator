@@ -2,75 +2,41 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  annotations:
-    controller-gen.kubebuilder.io/version: v0.17.2
   name: artifacthubs.core.artifacthub.io
 spec:
   group: core.artifacthub.io
   names:
-    kind: ArtifactHub
-    listKind: ArtifactHubList
+    kind: Artifacthub
+    listKind: ArtifacthubList
     plural: artifacthubs
     singular: artifacthub
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - description: Ready State
-      jsonPath: .status.ready
-      name: Ready
-      type: string
-    - description: Message
-      jsonPath: .status.message
-      name: Message
-      type: string
-    name: v1alpha1
+  - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: ArtifactHub is the Schema for the artifacthubs API.
+        description: Artifacthub is the Schema for the artifacthubs API
         properties:
           apiVersion:
-            description: |-
-              APIVersion defines the versioned schema of this representation of an object.
-              Servers should convert recognized schemas to the latest internal value, and
-              may reject unrecognized values.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: |-
-              Kind is a string value representing the REST resource this object represents.
-              Servers may infer this from the endpoint the client submits requests to.
-              Cannot be updated.
-              In CamelCase.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           metadata:
             type: object
           spec:
-            description: ArtifactHubSpec defines the desired state of ArtifactHub.
-            properties:
-              allowPrivateRepositories:
-                description: AllowPrivateRepositories indicates whether private repositories
-                  are allowed.
-                type: boolean
-              allowUserSignUp:
-                description: AllowUserSignUp indicates whether user sign-up is allowed.
-                type: boolean
-              version:
-                description: Version is the version of Artifact Hub to deploy.
-                pattern: ^v\d+\.\d+\.\d+(-\w+)?$
-                type: string
+            description: Spec defines the desired state of Artifacthub
             type: object
+            x-kubernetes-preserve-unknown-fields: true
           status:
-            description: ArtifactHubStatus defines the observed state of ArtifactHub.
-            properties:
-              message:
-                type: string
-              ready:
-                description: |-
-                  INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-                  Important: Run "make" to regenerate code after modifying this file
-                type: string
+            description: Status defines the observed state of Artifacthub
             type: object
+            x-kubernetes-preserve-unknown-fields: true
         type: object
     served: true
     storage: true
