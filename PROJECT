@@ -4,20 +4,17 @@
 # More info: https://book.kubebuilder.io/reference/project-config.html
 domain: artifacthub.io
 layout:
-- go.kubebuilder.io/v4
+- helm.sdk.operatorframework.io/v1
 plugins:
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}
 projectName: artifacthub-operator
-repo: github.com/EvannDev/artifacthub-operator
 resources:
 - api:
     crdVersion: v1
     namespaced: true
-  controller: true
   domain: artifacthub.io
   group: core
-  kind: ArtifactHub
-  path: github.com/EvannDev/artifacthub-operator/api/v1alpha1
+  kind: Artifacthub
   version: v1alpha1
 version: "3"

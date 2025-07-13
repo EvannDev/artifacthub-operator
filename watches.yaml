@@ -1,0 +1,6 @@
+# Use the 'create api' subcommand to add watches to this file.
+- group: core.artifacthub.io
+  version: v1alpha1
+  kind: Artifacthub
+  chart: helm-charts/artifact-hub
+# +kubebuilder:scaffold:watch
